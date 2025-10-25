@@ -19,8 +19,8 @@ body {
   margin: 0;
   font-family: "IBM Plex Mono", "SF Pro Display", "SF Pro Text", -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background-color: #faf9f7;
-  color: #111;
+  background-color: #000;
+  color: #f7f7f7;
   letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
 }
@@ -31,43 +31,85 @@ body.is-menu-closing {
 }
 
 .slides {
-  --slides-padding-block: clamp(2rem, 6vh, 6rem);
-  --slides-padding-inline: clamp(2.5rem, 7vw, 8rem);
+  --slides-padding-block: clamp(3rem, 10vh, 8rem);
+  --slides-padding-inline: clamp(2.5rem, 9vw, 9rem);
   position: relative;
   z-index: 1;
   height: 100vh;
-  overflow-y: auto;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
-  padding-block: var(--slides-padding-block);
-  padding-inline: var(--slides-padding-inline);
-  padding-top: calc(env(safe-area-inset-top, 0px) + var(--slides-padding-block, 0px));
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--slides-padding-block, 0px));
-  padding-left: calc(env(safe-area-inset-left, 0px) + var(--slides-padding-inline, 0px));
-  padding-right: calc(env(safe-area-inset-right, 0px) + var(--slides-padding-inline, 0px));
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  touch-action: pan-y;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.slides__background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background: #050505;
+}
+
+.slides__background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.55) 0%,
+      rgba(0, 0, 0, 0.45) 30%,
+      rgba(0, 0, 0, 0.6) 70%,
+      rgba(0, 0, 0, 0.75) 100%
+    ),
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12), transparent 55%);
+  pointer-events: none;
+  mix-blend-mode: normal;
+}
+
+.slides__background-layer {
+  position: absolute;
+  inset: -8vh 0;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: translate3d(0, var(--parallax-offset, 0px), 0)
+    scale(var(--parallax-scale, 1.08));
+  transition: opacity 900ms cubic-bezier(0.22, 0.73, 0.33, 0.98),
+    transform 900ms cubic-bezier(0.22, 0.73, 0.33, 0.98),
+    filter 900ms ease;
+  opacity: 0;
+  filter: brightness(0.38) saturate(0.85);
+}
+
+.slides__background-layer.is-active {
+  opacity: 1;
+  filter: brightness(0.82) saturate(1);
 }
 
 .slide {
-  position: relative;
-  min-height: calc(
-    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
-      (2 * var(--slides-padding-block, 0px))
-  );
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  overflow-y: auto;
-  padding: clamp(1.5rem, 5vw, 4rem) 0;
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--slides-padding-block));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--slides-padding-block));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--slides-padding-inline));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--slides-padding-inline));
+  pointer-events: none;
+  color: #f5f5f5;
+  z-index: 0;
+}
+
+.slide.is-active {
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.slide.is-fading-out {
+  z-index: 1;
 }
 
 /* Hero slide остаётся по центру */
@@ -90,55 +132,98 @@ body.is-menu-closing {
   font-weight: 200;
   opacity: 0;
   transform: translateY(14vh);
-  filter: blur(28px) brightness(0.01) saturate(0.46);
+  filter: blur(28px) brightness(1) saturate(1);
   isolation: isolate;
   z-index: 0;
   transition:
     opacity 720ms cubic-bezier(0.24, 0.88, 0.32, 1),
     transform 2550ms cubic-bezier(0.18, 0.92, 0.25, 1),
     filter 1200ms cubic-bezier(0.2, 0.78, 0.34, 0.98);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  text-shadow: 0 10px 38px rgba(0, 0, 0, 0.45);
 }
 
 .slide:first-child p {
-  font-size: clamp(1.6rem, 4.2vw, 2.8rem);
-  font-weight: 700;
+  font-size: clamp(2.2rem, 5.8vw, 4.6rem);
+  font-weight: 800;
   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
-  color: #000;
-  background: #faf9f7;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: inherit;
   opacity: 0;
-  transform: translate3d(0, 0, -420px) scale(0.72);
+  transform: translate3d(0, 12vh, 0);
   filter: blur(26px);
   transform-origin: 50% 50%;
-  transition: none;
+  transition: opacity 680ms cubic-bezier(0.21, 0.82, 0.4, 1),
+    transform 900ms cubic-bezier(0.22, 0.87, 0.44, 1),
+    filter 680ms ease;
   will-change: opacity, transform, filter;
 }
 
 .slide:first-child.is-active p {
   opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
+  transform: translate3d(0, 0, 0);
   filter: blur(0);
-  animation: hero-depth-in 640ms cubic-bezier(0.17, 0.88, 0.32, 1) 20ms both;
 }
 
 .slide:first-child.is-fading-out p {
   opacity: 0;
-  transform: translate3d(0, 0, -360px) scale(0.75);
+  transform: translate3d(0, -16vh, 0);
   filter: blur(26px);
-  animation: hero-depth-out 390ms cubic-bezier(0.3, 0.01, 0.74, 0.99) both;
 }
 
 .slide.is-active p {
   opacity: 1;
   transform: translateY(0);
-  filter: blur(0) brightness(1) saturate(1);
+  filter: blur(0) brightness(1) saturate(1.05);
 }
 
 .slide.is-fading-out p {
   opacity: 0;
   transform: translateY(-12vh);
-  filter: blur(30px) brightness(0.008) saturate(0.36);
+  filter: blur(30px) brightness(0.2) saturate(0.5);
+}
+
+.slides--reduced {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding-block: var(--slides-padding-block);
+  padding-inline: var(--slides-padding-inline);
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--slides-padding-block, 0px));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--slides-padding-block, 0px));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--slides-padding-inline, 0px));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--slides-padding-inline, 0px));
+}
+
+.slides--reduced .slide {
+  position: relative;
+  min-height: calc(
+    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
+      (2 * var(--slides-padding-block, 0px))
+  );
+  pointer-events: auto;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow-y: auto;
+  padding: clamp(1.5rem, 5vw, 4rem) 0;
+}
+
+.slides--reduced .slide p {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
+}
+
+.slides--reduced .slide .line__inner {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
 }
 
 .slide p .line {
@@ -328,10 +413,15 @@ body.is-menu-closing .site-menu {
   padding: 0;
   border: none;
   background: none;
-  color: rgba(0, 0, 0, 0.8);
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   z-index: 10000;
   transition: color 340ms ease;
+}
+
+.site-menu-toggle:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 4px;
 }
 
 .site-menu-toggle__icon {
