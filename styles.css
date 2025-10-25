@@ -197,6 +197,86 @@ body.is-menu-closing {
   }
 }
 
+/* === NEW: Cinematic panels (Boring Company style) === */
+
+.panels {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Lenis сгладит колёсико, но пусть и браузер ведёт себя корректно */
+  scroll-behavior: auto;
+}
+
+.panel {
+  position: relative;
+  height: 200vh;         /* Длинный трек для анимации */
+}
+
+.panel__pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;      /* Режем всё, что выходит за экран */
+  isolation: isolate;    /* Правильное смешение слоёв */
+}
+
+.panel__bg {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.panel__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: contrast(1.02) saturate(1.03);
+}
+
+.panel__content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 6vw, 72px);
+  text-align: center;
+}
+
+.panel__title {
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, "Segoe UI", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  font-size: clamp(2.4rem, 8vw, 7rem);
+  margin: 0;
+  text-transform: uppercase;
+  /* читаемость на фото */
+  text-shadow: 0 4px 26px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.2);
+}
+
+.panel__text {
+  max-width: min(68ch, 88vw);
+  font-weight: 300;
+  font-size: clamp(1.02rem, 2.6vw, 1.4rem);
+  line-height: 1.55;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.25);
+  background: color-mix(in srgb, rgba(0,0,0,.4) 70%, transparent);
+  backdrop-filter: blur(6px) saturate(1.05);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  padding: clamp(16px, 4vw, 28px);
+}
+
+/* Reduced motion: статический макет без «пролётов» */
+@media (prefers-reduced-motion: reduce) {
+  .panel { height: auto; }
+  .panel__pin { position: relative; height: auto; }
+  .panel__bg, .panel__bg img { position: relative; height: auto; }
+}
+
 @keyframes hero-depth-in {
   0% {
     opacity: 0;
