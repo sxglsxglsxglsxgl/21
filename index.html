@@ -54,23 +54,39 @@
       </div>
     </div>
 
-    <main class="slides">
-      <section class="slide">
-        <p>CLASSNOE MESTO</p>
+    <main id="app" class="panels">
+      <!-- PANEL 1: CLASSNOE MESTO -->
+      <section class="panel" data-speed="0.18">
+        <div class="panel__pin">
+          <div class="panel__bg">
+            <img src="assets/slide-1.jpg" alt="CLASSNOE MESTO — cover image" />
+          </div>
+          <div class="panel__content">
+            <h1 class="panel__title slideX">CLASSNOE MESTO</h1>
+          </div>
+        </div>
       </section>
-      <!-- Slide 2 -->
-      <section class="slide">
-        <p>
-          Мы знаем: здоровье и энергия важны.<br />
-          Но слишком часто они превращаются в рутину — вместо того, чтобы вдохновлять.<br /><br />
-          Мы — творческий коллектив, и мы создали <em>Classnoe Mesto</em>,<br />
-          чтобы переопределить культуру здоровья —<br />
-          где спорт, энергия и творчество становятся частью повседневности и личного стиля.<br /><br />
-          Это пространство — процесс.<br />
-          Культурная трансформация того, как мы воспринимаем себя, тело и энергию.<br />
-          Мы ищем форму вместе с вами.<br />
-          Мы пробуем, наблюдаем, меняемся — вместе.
-        </p>
+
+      <!-- PANEL 2: Manifest -->
+      <section class="panel" data-speed="0.12">
+        <div class="panel__pin">
+          <div class="panel__bg">
+            <img src="assets/slide-2.jpg" alt="Manifest background" />
+          </div>
+          <div class="panel__content">
+            <div class="panel__text fadeUp" role="doc-subtitle" aria-label="Манифест">
+              Мы знаем: здоровье и энергия важны.<br />
+              Но слишком часто они превращаются в рутину — вместо того, чтобы вдохновлять.<br /><br />
+              Мы — творческий коллектив, и мы создали <em>Classnoe Mesto</em>,<br />
+              чтобы переопределить культуру здоровья —<br />
+              где спорт, энергия и творчество становятся частью повседневности и личного стиля.<br /><br />
+              Это пространство — процесс.<br />
+              Культурная трансформация того, как мы воспринимаем себя, тело и энергию.<br />
+              Мы ищем форму вместе с вами.<br />
+              Мы пробуем, наблюдаем, меняемся — вместе.
+            </div>
+          </div>
+        </div>
       </section>
     </main>
     <script>
@@ -157,6 +173,9 @@
         });
       })();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
