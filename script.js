@@ -67,11 +67,12 @@
 
   // Parallax background via data-speed (positive — вниз, negative — вверх)
   document.querySelectorAll('.panel').forEach((panel) => {
-    const bg = panel.querySelector('.panel__bg');
-    if (!bg) return;
+    const bgImg = panel.querySelector('.panel__bg img');
+    if (!bgImg) return;
     const speed = parseFloat(panel.dataset.speed || 0.15);
-    gsap.to(bg, {
-      y: () => gsap.utils.interpolate(0, window.innerHeight * speed, 1),
+
+    gsap.to(bgImg, {
+      y: () => window.innerHeight * speed,
       ease: "none",
       scrollTrigger: {
         trigger: panel,

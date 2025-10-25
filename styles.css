@@ -206,6 +206,12 @@ body.is-menu-closing {
   overflow-x: hidden;
   /* Lenis сгладит колёсико, но пусть и браузер ведёт себя корректно */
   scroll-behavior: auto;
+  background: #000;              /* убираем «пробелы» между панелями */
+}
+
+.panel,
+.panel__pin {
+  background-color: #000;
 }
 
 .panel {
@@ -219,20 +225,30 @@ body.is-menu-closing {
   height: 100vh;
   overflow: hidden;      /* Режем всё, что выходит за экран */
   isolation: isolate;    /* Правильное смешение слоёв */
+  outline: 1px solid transparent; /* стабилизируем слой против 1px швов */
 }
 
 .panel__bg {
   position: absolute;
   inset: 0;
+  overflow: hidden;           /* прячем края картинки */
   will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);   /* сглаживаем субпиксельные швы */
 }
 
 .panel__bg img {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  /* небольшой оверсайз по всем сторонам */
+  top: -6vh; bottom: -6vh;
+  left: -2vw; right: -2vw;
+  width: calc(100% + 4vw);
+  height: calc(100% + 12vh);
   object-fit: cover;
   display: block;
   filter: contrast(1.02) saturate(1.03);
+  backface-visibility: hidden;
+  transform: translateZ(0) scale(1.001); /* фикс 1px-гепов на iOS/Chrome */
 }
 
 .panel__content {
