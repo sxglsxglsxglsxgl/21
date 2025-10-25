@@ -31,26 +31,13 @@ body.is-menu-closing {
 }
 
 .slides {
-  --slides-padding-block: clamp(2rem, 6vh, 6rem);
-  --slides-padding-inline: clamp(2.5rem, 7vw, 8rem);
+  --slides-padding-block: clamp(3rem, 10vh, 8rem);
+  --slides-padding-inline: clamp(2.5rem, 9vw, 9rem);
   position: relative;
   z-index: 1;
   height: 100vh;
-  overflow-y: auto;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
-  padding-block: var(--slides-padding-block);
-  padding-inline: var(--slides-padding-inline);
-  padding-top: calc(env(safe-area-inset-top, 0px) + var(--slides-padding-block, 0px));
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--slides-padding-block, 0px));
-  padding-left: calc(env(safe-area-inset-left, 0px) + var(--slides-padding-inline, 0px));
-  padding-right: calc(env(safe-area-inset-right, 0px) + var(--slides-padding-inline, 0px));
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  touch-action: pan-y;
+  overflow: hidden;
+  touch-action: none;
 }
 
 .slides__background {
@@ -100,21 +87,29 @@ body.is-menu-closing {
 }
 
 .slide {
-  position: relative;
-  min-height: calc(
-    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
-      (2 * var(--slides-padding-block, 0px))
-  );
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  overflow-y: auto;
-  padding: clamp(1.5rem, 5vw, 4rem) 0;
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--slides-padding-block));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--slides-padding-block));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--slides-padding-inline));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--slides-padding-inline));
+  pointer-events: none;
   color: #f5f5f5;
+  z-index: 0;
+}
+
+.slide.is-active {
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.slide.is-fading-out {
+  z-index: 1;
 }
 
 /* Hero slide остаётся по центру */
@@ -187,6 +182,48 @@ body.is-menu-closing {
   opacity: 0;
   transform: translateY(-12vh);
   filter: blur(30px) brightness(0.2) saturate(0.5);
+}
+
+.slides--reduced {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding-block: var(--slides-padding-block);
+  padding-inline: var(--slides-padding-inline);
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--slides-padding-block, 0px));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--slides-padding-block, 0px));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--slides-padding-inline, 0px));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--slides-padding-inline, 0px));
+}
+
+.slides--reduced .slide {
+  position: relative;
+  min-height: calc(
+    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
+      (2 * var(--slides-padding-block, 0px))
+  );
+  pointer-events: auto;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow-y: auto;
+  padding: clamp(1.5rem, 5vw, 4rem) 0;
+}
+
+.slides--reduced .slide p {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
+}
+
+.slides--reduced .slide .line__inner {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
 }
 
 .slide p .line {
