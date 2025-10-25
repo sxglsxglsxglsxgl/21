@@ -216,12 +216,11 @@ body.is-menu-closing {
 
 .panel {
   position: relative;
-  height: 200vh;         /* Длинный трек для анимации */
+  height: 100vh;                /* без «лишних» 100vh */
 }
 
 .panel__pin {
-  position: sticky;
-  top: 0;
+  position: relative;           /* sticky больше не нужен */
   height: 100vh;
   overflow: hidden;      /* Режем всё, что выходит за экран */
   isolation: isolate;    /* Правильное смешение слоёв */
