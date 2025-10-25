@@ -7,8 +7,98 @@ const ready = (fn) => {
 };
 
 ready(() => {
-  const slides = Array.from(document.querySelectorAll(".slide"));
+  const slidesContainer = document.querySelector(".slides");
+  if (!slidesContainer) return;
+
+  const slides = Array.from(slidesContainer.querySelectorAll(".slide"));
   if (!slides.length) return;
+
+  const backgroundHost = slidesContainer.querySelector(".slides__background");
+  const backgroundLayers = backgroundHost
+    ? slides.map((slide, index) => {
+        const src = slide.getAttribute("data-bg");
+        if (!src) return null;
+        const layer = document.createElement("div");
+        layer.className = "slides__background-layer";
+        layer.style.setProperty("--bg-image", `url('${src}')`);
+        backgroundHost.appendChild(layer);
+        return layer;
+      })
+    : [];
+
+  const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reduceMotion = reduceMotionQuery.matches;
+
+  let activeIndex = backgroundLayers.findIndex((layer) => layer !== null);
+  if (activeIndex === -1) activeIndex = 0;
+  if (backgroundLayers[activeIndex]) {
+    backgroundLayers[activeIndex].classList.add("is-active");
+  }
+
+  const setActiveBackground = (slide) => {
+    if (!backgroundLayers.length) return;
+    const index = slides.indexOf(slide);
+    const layer = backgroundLayers[index];
+    if (!layer || index === activeIndex) return;
+    if (backgroundLayers[activeIndex]) {
+      backgroundLayers[activeIndex].classList.remove("is-active");
+    }
+    layer.classList.add("is-active");
+    activeIndex = index;
+  };
+
+  const clearParallax = () => {
+    backgroundLayers.forEach((layer) => {
+      if (!layer) return;
+      layer.style.removeProperty("--parallax-offset");
+      layer.style.removeProperty("--parallax-scale");
+    });
+  };
+
+  const updateParallax = () => {
+    if (!backgroundLayers.length || reduceMotion) return;
+    const containerHeight = slidesContainer.clientHeight || window.innerHeight;
+    backgroundLayers.forEach((layer, index) => {
+      if (!layer) return;
+      const slide = slides[index];
+      const relativeTop = slide.offsetTop - slidesContainer.scrollTop;
+      const slideCenter = relativeTop + slide.offsetHeight / 2;
+      const distanceFromCenter = slideCenter - containerHeight / 2;
+      const translate = Math.max(-220, Math.min(220, distanceFromCenter * -0.22));
+      const scaleBase = 1.08;
+      const scaleDelta = Math.min(0.12, Math.abs(distanceFromCenter) / containerHeight * 0.12);
+      layer.style.setProperty("--parallax-offset", `${translate.toFixed(2)}px`);
+      layer.style.setProperty("--parallax-scale", `${(scaleBase + scaleDelta).toFixed(3)}`);
+    });
+  };
+
+  let rafId = null;
+  const scheduleParallax = () => {
+    if (reduceMotion) {
+      clearParallax();
+      return;
+    }
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(() => {
+      updateParallax();
+      rafId = null;
+    });
+  };
+
+  const handleMotionPreferenceChange = (event) => {
+    reduceMotion = event.matches;
+    if (reduceMotion) {
+      clearParallax();
+    } else {
+      scheduleParallax();
+    }
+  };
+
+  if (typeof reduceMotionQuery.addEventListener === "function") {
+    reduceMotionQuery.addEventListener("change", handleMotionPreferenceChange);
+  } else if (typeof reduceMotionQuery.addListener === "function") {
+    reduceMotionQuery.addListener(handleMotionPreferenceChange);
+  }
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -17,6 +107,7 @@ ready(() => {
         if (entry.isIntersecting) {
           slide.classList.add("is-active");
           slide.classList.remove("is-fading-out");
+          setActiveBackground(slide);
           if (slide._fadeTimeout) {
             clearTimeout(slide._fadeTimeout);
             slide._fadeTimeout = null;
@@ -30,6 +121,7 @@ ready(() => {
           }, 2500);
         }
       });
+      scheduleParallax();
     },
     {
       threshold: 0.6,
@@ -38,9 +130,13 @@ ready(() => {
 
   slides.forEach((slide) => observer.observe(slide));
 
+  slidesContainer.addEventListener("scroll", scheduleParallax, { passive: true });
+  window.addEventListener("resize", scheduleParallax);
+
   // Ensure the first slide is active on load for browsers that do not trigger IntersectionObserver immediately.
   slides[0].classList.add("is-active");
-
+  setActiveBackground(slides[0]);
+  scheduleParallax();
 });
 
 // === Line-by-Line wrapper ===
