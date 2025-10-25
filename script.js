@@ -1,4 +1,4 @@
-/* GSAP pin без межсекционных пробелов + параллакс и «скольжение» */
+/* GSAP-driven cinematic panels: pinning, parallax, and overlays */
 
 (function () {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -25,19 +25,22 @@
     });
   }
 
-  // 1) Пин каждого .panel__pin без добавления отступов
-  document.querySelectorAll('.panel__pin').forEach((pinEl) => {
+  // 1) Пин каждой секции: GSAP сам добавит трек высотой ~1 экран
+  document.querySelectorAll('.panel').forEach((panel) => {
+    const pinEl = panel.querySelector('.panel__pin');
     ScrollTrigger.create({
-      trigger: pinEl,
+      trigger: panel,
+      pin: pinEl,
       start: "top top",
-      end: "+=100%",       // один экран скролла на секцию
-      pin: true,
-      pinSpacing: false,   // <— ключ! не вставлять «прокладки» между секциями
-      scrub: true
+      end: "+=100%",
+      pinSpacing: true,
+      anticipatePin: 1,
+      scrub: true,
+      invalidateOnRefresh: true
     });
   });
 
-  // 2) Параллакс для фона внутри секции (по data-speed на .panel)
+  // 2) Параллакс для фона — тот же трек, та же секция
   document.querySelectorAll('.panel').forEach((panel) => {
     const img = panel.querySelector('.panel__bg img');
     if (!img) return;
@@ -46,7 +49,7 @@
       y: () => innerHeight * speed,
       ease: "none",
       scrollTrigger: {
-        trigger: panel.querySelector('.panel__pin'),
+        trigger: panel,
         start: "top top",
         end: "+=100%",
         scrub: true
@@ -54,12 +57,12 @@
     });
   });
 
-  // 3) «Скольжение» заголовка по X
+  // 3) «Скольжение» заголовка по X — тоже на треке секции
   document.querySelectorAll('.slideX').forEach((el) => {
     gsap.fromTo(el, { xPercent: -28, opacity: 0.001 }, {
       xPercent: 28, opacity: 1, ease: "none",
       scrollTrigger: {
-        trigger: el.closest('.panel__pin'),
+        trigger: el.closest('.panel'),
         start: "top top",
         end: "+=100%",
         scrub: true
@@ -67,12 +70,12 @@
     });
   });
 
-  // 4) Мягкий fadeUp текста
+  // 4) FadeUp текста
   document.querySelectorAll('.fadeUp').forEach((el) => {
     gsap.fromTo(el, { y: 40, opacity: 0 }, {
       y: 0, opacity: 1, ease: "power1.out",
       scrollTrigger: {
-        trigger: el.closest('.panel__pin'),
+        trigger: el.closest('.panel'),
         start: "top 65%",
         end: "top 35%",
         scrub: true
